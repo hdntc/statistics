@@ -39,9 +39,11 @@ def estimate_std_dev(data:dict) -> float:
 
 def find_variance_CI(data:dict, confidence_level:float) -> (float):
     n = get_sample_size(data)
+    cvn = stats.chi2.isf(0.5 - confidence_level/200, n-1)
+    cvp = stats.chi2.isf(0.5 + confidence_level/200, n-1)
 
-    lower_bound = estimate_variance(data) * (n-1) / stats.chi2.isf(0.5 - confidence_level/200, n-1)
-    upper_bound = estimate_variance(data) * (n-1) / stats.chi2.isf(0.5 + confidence_level/200, n-1)
+    lower_bound = estimate_variance(data) * (n-1) / cvn
+    upper_bound = estimate_variance(data) * (n-1) / cvp
 
     return (lower_bound, upper_bound)
 
@@ -49,6 +51,17 @@ def find_std_dev_CI(data:dict, confidence_level:float) -> (float):
     variance_CI = find_variance_CI(data, confidence_level)
 
     return (variance_CI[0]**0.5, variance_CI[1]**0.5)
+
+def find_mean_CI(data:dict, confidence_level:float) -> (float):
+    n = get_sample_size(data)
+    s = estimate_std_dev(data)
+    mean = estimate_mean(data)
+    t = stats.t.isf(0.5 - confidence_level/200, n-1)
+
+    lower_bound = mean - t*s/n**0.5
+    upper_bound = mean + t*s/n**0.5
+
+    return (lower_bound, upper_bound)
 
 def get_confidence() -> float:
     user_input = input("Enter confidence level (as a percentage):\n>>> ")
@@ -73,4 +86,5 @@ if __name__ == "__main__":
         confidence_level = get_confidence()
         print(f"Variance {confidence_level}% confidence interval: {find_variance_CI(data, confidence_level)}")
         print(f"Std. dev {confidence_level}% confidence interval: {find_std_dev_CI(data, confidence_level)}")
+        print(f"Mean {confidence_level}% confidence interval: {find_mean_CI(data, confidence_level)}")
         
