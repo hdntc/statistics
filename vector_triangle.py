@@ -19,7 +19,7 @@ def generate_area(r):
     return 0.5 * numpy.sin(generate_theta()) * generate_R(r)**2
 
 def generate_multiple_areas(r,n):
-    return {generate_area(r) : 1 for _ in range(n)} #frequneyc table
+    return {generate_area(r) : 1 for _ in range(n)} #frequency table
 
 def update_data(r):
     values =  [[generate_area(r), 1] for _ in range(1000)]
